@@ -1,8 +1,11 @@
+import org.example.NegativeIdException;
+import org.example.NotFoundIdException;
 import org.example.ProductRepository;
 import org.example.PurchaseItem;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import java.util.Arrays;
+import org.mockito.Mockito;
 
 public class ProductRepositoryTest {
 
@@ -51,7 +54,7 @@ public class ProductRepositoryTest {
         Assertions.assertArrayEquals(expected, actual);
     }
 
-    //Добавили все продукты
+    //Проверка добавленных всех продуктов в корзину
     @Test
     public void addAllItem() {
         ProductRepository repo = new ProductRepository();
@@ -65,5 +68,58 @@ public class ProductRepositoryTest {
         PurchaseItem[] actual = repo.getItems();
 
         Assertions.assertArrayEquals(expected, actual);
+    }
+
+    //Проверка поиска товара с методом findById
+    @Test
+    public void itemFindById() {
+        ProductRepository repo = new ProductRepository();
+        repo.save(item1);
+
+        PurchaseItem actual = repo.findById(item1.getId());
+
+        Assertions.assertEquals(item1.getId(), actual.getId());
+    }
+
+    // Проверка удаления несуществующего товара
+    @Test
+    public void itemNotFound() {
+        ProductRepository repo = new ProductRepository();
+        repo.save(item1);
+        repo.save(item2);
+        repo.removeById(item1.getId());
+        repo.removeById(item2.getId());
+
+        Assertions.assertThrows(NegativeIdException.class, () -> {
+            repo.removeById(3);
+        });
+    }
+
+    //Проверка удаления отрицательного товара
+    @Test
+    public void itemNegative() {
+        ProductRepository repo = new ProductRepository();
+        repo.save(item1);
+        repo.save(item2);
+        repo.removeById(item1.getId());
+        repo.removeById(item2.getId());
+
+        Assertions.assertThrows(NegativeIdException.class, () -> {
+            repo.removeById(-100);
+        });
+    }
+    //Проверка, что удалили элемент и пытаемся, его снова удалить
+
+    @Test
+    public void removeIdThenDeletedIdItem() {
+        ProductRepository repo = new ProductRepository();
+        repo.save(item1);
+        repo.save(item2);
+
+        repo.removeById(item1.getId());
+
+        Assertions.assertThrows(NotFoundIdException.class, () -> {
+            repo.removeById(item1.getId());
+        });
     }
 }

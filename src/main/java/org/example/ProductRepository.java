@@ -12,7 +12,29 @@ public class ProductRepository {
         items = tmp;
     }
 
+    public PurchaseItem findById(int id) {
+        for (PurchaseItem item:items) {
+            if (item.getId()==id) {
+                return item;
+            }
+        }
+        return null;
+    }
+
     public void removeById(int id) {
+        //Проверка на отрицательный id
+        if (id < 0) {
+            throw new NegativeIdException(
+                    "ID не может быть отрицательным: " +id
+            );
+        }
+        //Проверка на несуществующий элемент
+        if (findById(id)==null) {
+            throw  new NotFoundIdException(
+                    "Элемент не найден: " +id
+            );
+        }
+        int length = items.length - 1;
         PurchaseItem[] tmp = new PurchaseItem[items.length - 1];
         int copyToIndex = 0;
         for (PurchaseItem item : items) {
