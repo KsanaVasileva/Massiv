@@ -47,7 +47,6 @@ public class ProductRepositoryTest {
         repo.removeById(item4.getId());
         repo.removeById(item5.getId());
 
-
         PurchaseItem[] expected = {};
         PurchaseItem[] actual = repo.getItems();
 
@@ -90,7 +89,7 @@ public class ProductRepositoryTest {
         repo.removeById(item1.getId());
         repo.removeById(item2.getId());
 
-        Assertions.assertThrows(NegativeIdException.class, () -> {
+        Assertions.assertThrows(NotFoundIdException.class, () -> {
             repo.removeById(3);
         });
     }
